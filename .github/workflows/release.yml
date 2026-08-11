@@ -1,0 +1,105 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g. 0.1.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Test before release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+      # Nothing ships without passing on every platform it claims to support.
+      - run: go test ./...
+      - run: go vet ./...
+
+  build:
+    name: Build release binaries
+    runs-on: ubuntu-latest
+    needs: [test]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      # This job is the only place Go is needed to produce what users download.
+      - name: Cross-compile every target
+        run: |
+          chmod +x scripts/build-release.sh
+          ./scripts/build-release.sh "${{ steps.version.outputs.version }}"
+
+      - name: Verify the artefacts are static
+        run: |
+          file dist/bento-linux-amd64 | tee /dev/stderr | grep -q 'statically linked'
+          echo "Linux binaries are statically linked and need no runtime."
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bento-binaries
+          path: dist/
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/bento-*
+            dist/checksums.txt
+          generate_release_notes: true
+          body: |
+            ## 🍱 Bento Box ${{ steps.version.outputs.version }}
+
+            Download the binary for your platform, make it executable, and run it.
+            **No Go, Python, Node or any other runtime is required.**
+
+            | Platform | Binary |
+            | --- | --- |
+            | Windows x64 | `bento-windows-amd64.exe` |
+            | Windows ARM64 | `bento-windows-arm64.exe` |
+            | Linux x64 | `bento-linux-amd64` |
+            | Linux ARM64 | `bento-linux-arm64` |
+            | macOS Intel | `bento-darwin-amd64` |
+            | macOS Apple Silicon | `bento-darwin-arm64` |
+
+            ```bash
+            chmod +x ./bento-linux-amd64
+            ./bento-linux-amd64
+            ```
+
+            Verify your download against `checksums.txt`:
+
+            ```bash
+            sha256sum -c checksums.txt --ignore-missing
+            ```
+
+            Not sure? Run it with `--dry-run` first; it will show you exactly
+            what it would do and change nothing.

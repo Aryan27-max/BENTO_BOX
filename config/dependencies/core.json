@@ -1,0 +1,382 @@
+[
+  {
+    "name": "git",
+    "display_name": "Git",
+    "description": "Distributed version control system",
+    "category": "DEVELOPMENT_TOOL",
+    "profiles": ["core"],
+    "required": true,
+    "minimum_version": "2.30.0",
+    "stable_policy": "latest-stable",
+    "homepage": "https://git-scm.com",
+    "verify": { "command": "git", "args": ["--version"] },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["Git.Git"] }] },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["git"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["git"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["git"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["git"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["git"] }] }
+    }
+  },
+  {
+    "name": "git-lfs",
+    "display_name": "Git LFS",
+    "description": "Git extension for versioning large files",
+    "category": "DEVELOPMENT_TOOL",
+    "profiles": ["core"],
+    "required": false,
+    "requires": ["git"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://git-lfs.com",
+    "verify": { "command": "git-lfs", "args": ["--version"] },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["GitHub.GitLFS"], "post_install": [["git", "lfs", "install"]] }] },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["git-lfs"], "elevate": true, "post_install": [["git", "lfs", "install"]] },
+          { "method": "package_manager", "manager": "dnf", "packages": ["git-lfs"], "elevate": true, "post_install": [["git", "lfs", "install"]] },
+          { "method": "package_manager", "manager": "pacman", "packages": ["git-lfs"], "elevate": true, "post_install": [["git", "lfs", "install"]] },
+          { "method": "package_manager", "manager": "zypper", "packages": ["git-lfs"], "elevate": true, "post_install": [["git", "lfs", "install"]] }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["git-lfs"], "post_install": [["git", "lfs", "install"]] }] }
+    }
+  },
+  {
+    "name": "github-cli",
+    "display_name": "GitHub CLI",
+    "description": "GitHub from the command line",
+    "category": "CLI_TOOL",
+    "profiles": ["core"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://cli.github.com",
+    "notes": "Older Debian and Ubuntu releases do not carry gh in their default archives; on those systems the install is reported as failed rather than silently skipped.",
+    "verify": { "command": "gh", "args": ["--version"] },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["GitHub.cli"] }] },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["gh"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["gh"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["github-cli"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["gh"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["gh"] }] }
+    }
+  },
+  {
+    "name": "curl",
+    "display_name": "curl",
+    "description": "Command line HTTP client",
+    "category": "CLI_TOOL",
+    "profiles": ["core"],
+    "required": true,
+    "stable_policy": "latest-stable",
+    "homepage": "https://curl.se",
+    "verify": { "command": "curl", "args": ["--version"] },
+    "platforms": {
+      "windows": {
+        "notes": "Windows 10 build 1803 and later ship curl.exe in System32, so this is normally already satisfied.",
+        "install": [{ "method": "package_manager", "manager": "winget", "packages": ["cURL.cURL"] }]
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["curl"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["curl"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["curl"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["curl"], "elevate": true }
+        ]
+      },
+      "darwin": {
+        "notes": "macOS ships curl in the base system.",
+        "install": [{ "method": "package_manager", "manager": "brew", "packages": ["curl"] }]
+      }
+    }
+  },
+  {
+    "name": "wget",
+    "display_name": "wget",
+    "description": "Non-interactive network downloader",
+    "category": "CLI_TOOL",
+    "profiles": ["core"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.gnu.org/software/wget/",
+    "verify": { "command": "wget", "args": ["--version"] },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["JernejSimoncic.Wget"] }] },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["wget"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["wget"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["wget"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["wget"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["wget"] }] }
+    }
+  },
+  {
+    "name": "jq",
+    "display_name": "jq",
+    "description": "Command line JSON processor",
+    "category": "CLI_TOOL",
+    "profiles": ["core"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://jqlang.github.io/jq/",
+    "verify": { "command": "jq", "args": ["--version"] },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["jqlang.jq"] }] },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["jq"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["jq"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["jq"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["jq"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["jq"] }] }
+    }
+  },
+  {
+    "name": "openssh",
+    "display_name": "OpenSSH Client",
+    "description": "Secure shell client",
+    "category": "CLI_TOOL",
+    "profiles": ["core"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.openssh.com",
+    "verify": { "command": "ssh", "args": ["-V"], "pattern": "OpenSSH[_ ]([0-9]+\\.[0-9]+)" },
+    "platforms": {
+      "windows": {
+        "install": [
+          {
+            "method": "manual",
+            "reason": "The OpenSSH Client is a Windows optional feature and is enabled by default on Windows 10 1809 and later. Bento does not toggle Windows features automatically.",
+            "url": "https://learn.microsoft.com/windows-server/administration/openssh/openssh_install_firstuse"
+          }
+        ]
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["openssh-client"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["openssh-clients"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["openssh"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["openssh"], "elevate": true }
+        ]
+      },
+      "darwin": {
+        "notes": "macOS ships OpenSSH in the base system.",
+        "install": [{ "method": "bundled" }]
+      }
+    }
+  },
+  {
+    "name": "make",
+    "display_name": "Make",
+    "description": "Build automation tool",
+    "category": "DEVELOPMENT_TOOL",
+    "profiles": ["core"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.gnu.org/software/make/",
+    "verify": { "command": "make", "args": ["--version"] },
+    "platforms": {
+      "windows": {
+        "notes": "GnuWin32 Make does not always register itself on PATH; if verification fails after install, Make is reported as a warning rather than as working.",
+        "install": [{ "method": "package_manager", "manager": "winget", "packages": ["GnuWin32.Make"] }]
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["make"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["make"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["make"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["make"], "elevate": true }
+        ]
+      },
+      "darwin": {
+        "notes": "The Xcode Command Line Tools provide make; Homebrew's package installs a newer GNU Make as gmake.",
+        "install": [{ "method": "package_manager", "manager": "brew", "packages": ["make"] }]
+      }
+    }
+  },
+  {
+    "name": "cmake",
+    "display_name": "CMake",
+    "description": "Cross-platform build system generator",
+    "category": "DEVELOPMENT_TOOL",
+    "profiles": ["core"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://cmake.org",
+    "verify": { "command": "cmake", "args": ["--version"] },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["Kitware.CMake"] }] },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["cmake"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["cmake"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["cmake"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["cmake"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["cmake"] }] }
+    }
+  },
+  {
+    "name": "vim",
+    "display_name": "Vim",
+    "description": "Terminal text editor",
+    "category": "DEVELOPMENT_TOOL",
+    "profiles": ["core"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.vim.org",
+    "verify": { "command": "vim", "args": ["--version"], "pattern": "IMproved ([0-9]+\\.[0-9]+)" },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["vim.vim"] }] },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["vim"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["vim-enhanced"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["vim"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["vim"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["vim"] }] }
+    }
+  },
+  {
+    "name": "vscode",
+    "display_name": "Visual Studio Code",
+    "description": "Code editor",
+    "category": "GUI_APPLICATION",
+    "profiles": ["core"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://code.visualstudio.com",
+    "verify": {
+      "command": "code",
+      "args": ["--version"],
+      "paths": {
+        "windows": [
+          "${LOCALAPPDATA}/Programs/Microsoft VS Code/Code.exe",
+          "${PROGRAMFILES}/Microsoft VS Code/Code.exe"
+        ],
+        "darwin": ["/Applications/Visual Studio Code.app"],
+        "linux": ["/usr/share/code/code", "/snap/bin/code", "/usr/bin/code"]
+      }
+    },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["Microsoft.VisualStudioCode"] }] },
+      "linux": {
+        "notes": "Microsoft publishes .deb and .rpm packages directly; the Arch package is the Code - OSS build.",
+        "install": [
+          {
+            "method": "local_package",
+            "urls": {
+              "amd64": "https://update.code.visualstudio.com/latest/linux-deb-x64/stable",
+              "arm64": "https://update.code.visualstudio.com/latest/linux-deb-arm64/stable"
+            },
+            "manager": "apt",
+            "elevate": true
+          },
+          {
+            "method": "local_package",
+            "urls": {
+              "amd64": "https://update.code.visualstudio.com/latest/linux-rpm-x64/stable",
+              "arm64": "https://update.code.visualstudio.com/latest/linux-rpm-arm64/stable"
+            },
+            "manager": "dnf",
+            "elevate": true
+          },
+          { "method": "package_manager", "manager": "snap", "packages": ["code"], "classic": true, "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["code"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["visual-studio-code"], "cask": true }] }
+    }
+  },
+  {
+    "name": "postman",
+    "display_name": "Postman",
+    "description": "API development and testing client",
+    "category": "GUI_APPLICATION",
+    "profiles": ["core"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.postman.com",
+    "verify": {
+      "skip_version": true,
+      "paths": {
+        "windows": ["${LOCALAPPDATA}/Postman/Postman.exe"],
+        "darwin": ["/Applications/Postman.app"],
+        "linux": ["/snap/bin/postman", "/opt/Postman/Postman", "${HOME}/.local/share/Postman/Postman"]
+      }
+    },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["Postman.Postman"] }] },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "snap", "packages": ["postman"], "elevate": true },
+          {
+            "method": "manual",
+            "reason": "Postman ships a tarball for Linux rather than distribution packages, and snapd is not available on this system.",
+            "url": "https://www.postman.com/downloads/"
+          }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["postman"], "cask": true }] }
+    }
+  },
+  {
+    "name": "docker",
+    "display_name": "Docker",
+    "description": "Container runtime and tooling",
+    "category": "SERVICE",
+    "profiles": ["core"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.docker.com",
+    "verify": { "command": "docker", "args": ["--version"] },
+    "service": {
+      "names": { "linux": "docker", "windows": "com.docker.service", "darwin": "docker" },
+      "required": false,
+      "notes": "Installation and runtime are separate: Bento reports whether the Docker daemon is running but does not start Docker Desktop for you."
+    },
+    "platforms": {
+      "windows": {
+        "elevate": true,
+        "restart_required": true,
+        "notes": "Docker Desktop needs WSL2 or Hyper-V and usually requires a restart before the daemon runs.",
+        "install": [{ "method": "package_manager", "manager": "winget", "packages": ["Docker.DockerDesktop"] }],
+        "service": { "names": { "windows": "com.docker.service" }, "manual": true, "notes": "Docker Desktop is launched by the user, not by Bento." }
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["docker.io"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["moby-engine"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["docker"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["docker"], "elevate": true }
+        ],
+        "notes": "Running docker without sudo requires adding your user to the docker group; Bento does not change group membership because it grants root-equivalent access."
+      },
+      "darwin": {
+        "install": [
+          { "method": "package_manager", "manager": "brew", "packages": ["docker-desktop"], "cask": true },
+          { "method": "package_manager", "manager": "brew", "packages": ["docker"], "cask": true }
+        ],
+        "service": { "names": { "darwin": "docker" }, "manual": true, "notes": "Docker Desktop is launched by the user, not by Bento." }
+      }
+    }
+  }
+]

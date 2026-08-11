@@ -1,0 +1,455 @@
+[
+  {
+    "name": "cpp-toolchain",
+    "display_name": "C / C++ Toolchain",
+    "description": "System C and C++ compiler toolchain",
+    "category": "LANGUAGE",
+    "profiles": ["core"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://gcc.gnu.org",
+    "verify": { "command": "gcc", "args": ["--version"] },
+    "platforms": {
+      "windows": {
+        "notes": "Bento installs the LLVM/Clang toolchain on Windows because it registers itself on PATH; the MSVC Build Tools are a much larger install that Bento leaves to the user.",
+        "install": [{ "method": "package_manager", "manager": "winget", "packages": ["LLVM.LLVM"] }],
+        "verify": { "command": "clang", "args": ["--version"] }
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["build-essential"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["gcc", "gcc-c++", "make"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["base-devel"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["gcc", "gcc-c++", "make"], "elevate": true }
+        ]
+      },
+      "darwin": {
+        "notes": "Clang comes from the Xcode Command Line Tools; the installer opens a system dialog.",
+        "install": [{ "method": "command", "command": ["xcode-select", "--install"] }],
+        "verify": { "command": "clang", "args": ["--version"] }
+      }
+    }
+  },
+  {
+    "name": "python",
+    "display_name": "Python",
+    "description": "Python interpreter and standard library",
+    "category": "LANGUAGE",
+    "profiles": ["ai", "web"],
+    "required": true,
+    "minimum_version": "3.10.0",
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.python.org",
+    "verify": { "command": "python3", "args": ["--version"] },
+    "platforms": {
+      "windows": {
+        "notes": "winget publishes one package per minor release; Bento tries the newest first and falls back, which keeps version numbers in data rather than in code.",
+        "install": [
+          { "method": "package_manager", "manager": "winget", "packages": ["Python.Python.3.13"] },
+          { "method": "package_manager", "manager": "winget", "packages": ["Python.Python.3.12"] }
+        ],
+        "verify": { "command": "python", "args": ["--version"], "pattern": "Python ([0-9]+\\.[0-9]+\\.[0-9]+)" }
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["python3", "python3-pip", "python3-venv"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["python3", "python3-pip"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["python", "python-pip"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["python3", "python3-pip"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["python"] }] }
+    }
+  },
+  {
+    "name": "pip",
+    "display_name": "pip",
+    "description": "Python package installer",
+    "category": "PACKAGE_MANAGER",
+    "profiles": ["ai", "web"],
+    "required": true,
+    "requires": ["python"],
+    "verify": { "command": "pip3", "args": ["--version"] },
+    "platforms": {
+      "windows": {
+        "install": [{ "method": "bundled" }],
+        "verify": { "command": "pip", "args": ["--version"] }
+      },
+      "linux": { "install": [{ "method": "bundled" }] },
+      "darwin": { "install": [{ "method": "bundled" }] }
+    }
+  },
+  {
+    "name": "uv",
+    "display_name": "uv",
+    "description": "Fast Python package and project manager",
+    "category": "PACKAGE_MANAGER",
+    "profiles": ["ai", "web"],
+    "required": false,
+    "requires": ["python"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://docs.astral.sh/uv/",
+    "verify": { "command": "uv", "args": ["--version"] },
+    "platforms": {
+      "windows": {
+        "install": [
+          { "method": "package_manager", "manager": "winget", "packages": ["astral-sh.uv"] },
+          { "method": "language_package", "via": "pip", "packages": ["uv"] }
+        ]
+      },
+      "linux": { "install": [{ "method": "language_package", "via": "pip", "packages": ["uv"] }] },
+      "darwin": {
+        "install": [
+          { "method": "package_manager", "manager": "brew", "packages": ["uv"] },
+          { "method": "language_package", "via": "pip", "packages": ["uv"] }
+        ]
+      }
+    }
+  },
+  {
+    "name": "node",
+    "display_name": "Node.js",
+    "description": "JavaScript runtime",
+    "category": "RUNTIME",
+    "profiles": ["web", "blockchain", "app"],
+    "required": true,
+    "minimum_version": "20.0.0",
+    "stable_policy": "latest-lts",
+    "homepage": "https://nodejs.org",
+    "verify": { "command": "node", "args": ["--version"] },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["OpenJS.NodeJS.LTS"] }] },
+      "linux": {
+        "notes": "Distribution packages are tried first; when they are older than the minimum supported version Bento falls back to the official Node.js LTS tarball.",
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["nodejs", "npm"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["nodejs", "npm"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["nodejs", "npm"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["nodejs", "npm"], "elevate": true },
+          { "method": "archive", "resolver": "node_lts", "install_dir": "node" }
+        ]
+      },
+      "darwin": {
+        "install": [
+          { "method": "package_manager", "manager": "brew", "packages": ["node"] },
+          { "method": "archive", "resolver": "node_lts", "install_dir": "node" }
+        ]
+      }
+    }
+  },
+  {
+    "name": "npm",
+    "display_name": "npm",
+    "description": "Node.js package manager",
+    "category": "PACKAGE_MANAGER",
+    "profiles": ["web", "blockchain", "app"],
+    "required": true,
+    "requires": ["node"],
+    "verify": { "command": "npm", "args": ["--version"] },
+    "platforms": {
+      "windows": { "install": [{ "method": "bundled" }] },
+      "linux": { "install": [{ "method": "bundled" }] },
+      "darwin": { "install": [{ "method": "bundled" }] }
+    }
+  },
+  {
+    "name": "pnpm",
+    "display_name": "pnpm",
+    "description": "Fast, disk-efficient Node.js package manager",
+    "category": "PACKAGE_MANAGER",
+    "profiles": ["web", "blockchain", "app"],
+    "required": false,
+    "requires": ["npm"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://pnpm.io",
+    "verify": { "command": "pnpm", "args": ["--version"] },
+    "platforms": {
+      "windows": {
+        "install": [
+          { "method": "language_package", "via": "npm", "packages": ["pnpm"] },
+          { "method": "package_manager", "manager": "winget", "packages": ["pnpm.pnpm"] }
+        ]
+      },
+      "linux": { "install": [{ "method": "language_package", "via": "npm", "packages": ["pnpm"] }] },
+      "darwin": { "install": [{ "method": "language_package", "via": "npm", "packages": ["pnpm"] }] }
+    }
+  },
+  {
+    "name": "bun",
+    "display_name": "Bun",
+    "description": "All-in-one JavaScript runtime and toolkit",
+    "category": "RUNTIME",
+    "profiles": ["web"],
+    "required": false,
+    "requires": ["npm"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://bun.sh",
+    "verify": { "command": "bun", "args": ["--version"] },
+    "platforms": {
+      "windows": {
+        "arch": ["amd64"],
+        "notes": "Bun does not publish a Windows arm64 build.",
+        "install": [
+          { "method": "package_manager", "manager": "winget", "packages": ["Oven-sh.Bun"] },
+          { "method": "language_package", "via": "npm", "packages": ["bun"] }
+        ]
+      },
+      "linux": { "install": [{ "method": "language_package", "via": "npm", "packages": ["bun"] }] },
+      "darwin": { "install": [{ "method": "language_package", "via": "npm", "packages": ["bun"] }] }
+    }
+  },
+  {
+    "name": "typescript",
+    "display_name": "TypeScript",
+    "description": "Typed superset of JavaScript, installed as a global compiler",
+    "category": "LANGUAGE",
+    "profiles": ["web", "blockchain", "app"],
+    "required": false,
+    "requires": ["npm"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.typescriptlang.org",
+    "notes": "Frameworks such as React, Next.js and Vite are deliberately not installed globally; they belong in each project's package.json.",
+    "verify": { "command": "tsc", "args": ["--version"] },
+    "platforms": {
+      "windows": { "install": [{ "method": "language_package", "via": "npm", "packages": ["typescript"] }] },
+      "linux": { "install": [{ "method": "language_package", "via": "npm", "packages": ["typescript"] }] },
+      "darwin": { "install": [{ "method": "language_package", "via": "npm", "packages": ["typescript"] }] }
+    }
+  },
+  {
+    "name": "go",
+    "display_name": "Go",
+    "description": "Go programming language toolchain",
+    "category": "LANGUAGE",
+    "profiles": ["blockchain", "web"],
+    "required": true,
+    "minimum_version": "1.21.0",
+    "stable_policy": "latest-stable",
+    "homepage": "https://go.dev",
+    "verify": { "command": "go", "args": ["version"] },
+    "environment": [
+      { "name": "GOROOT", "value": "", "from_command": ["go", "env", "GOROOT"] },
+      { "name": "GOPATH", "value": "", "from_command": ["go", "env", "GOPATH"] }
+    ],
+    "path_entries": [{ "path": "bin", "from_command": ["go", "env", "GOPATH"] }],
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["GoLang.Go"] }] },
+      "linux": {
+        "notes": "The official go.dev tarball is preferred because distribution packages frequently lag several releases behind.",
+        "install": [
+          { "method": "archive", "resolver": "go_stable", "install_dir": "go" },
+          { "method": "package_manager", "manager": "apt", "packages": ["golang-go"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["golang"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["go"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["go"], "elevate": true }
+        ]
+      },
+      "darwin": {
+        "install": [
+          { "method": "package_manager", "manager": "brew", "packages": ["go"] },
+          { "method": "archive", "resolver": "go_stable", "install_dir": "go" }
+        ]
+      }
+    }
+  },
+  {
+    "name": "rust",
+    "display_name": "Rust",
+    "description": "Rust toolchain managed by rustup",
+    "category": "LANGUAGE",
+    "profiles": ["blockchain"],
+    "required": true,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.rust-lang.org",
+    "verify": {
+      "command": "rustc",
+      "args": ["--version"],
+      "components": [
+        { "name": "rustup", "command": "rustup", "args": ["--version"] },
+        { "name": "cargo", "command": "cargo", "args": ["--version"] },
+        { "name": "rustfmt", "command": "rustfmt", "args": ["--version"] },
+        { "name": "clippy", "command": "cargo", "args": ["clippy", "--version"] }
+      ]
+    },
+    "environment": [
+      { "name": "CARGO_HOME", "value": "${HOME}/.cargo" },
+      { "name": "RUSTUP_HOME", "value": "${HOME}/.rustup" }
+    ],
+    "path_entries": [{ "path": "${HOME}/.cargo/bin" }],
+    "platforms": {
+      "windows": {
+        "notes": "The default x86_64-pc-windows-msvc toolchain needs the MSVC linker; install the Visual Studio Build Tools if linking fails.",
+        "install": [
+          {
+            "method": "package_manager",
+            "manager": "winget",
+            "packages": ["Rustlang.Rustup"],
+            "post_install": [
+              ["rustup", "toolchain", "install", "stable"],
+              ["rustup", "default", "stable"],
+              ["rustup", "component", "add", "rustfmt", "clippy"]
+            ]
+          }
+        ]
+      },
+      "linux": {
+        "install": [
+          {
+            "method": "installer",
+            "urls": {
+              "amd64": "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init",
+              "arm64": "https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-gnu/rustup-init"
+            },
+            "installer_args": ["-y", "--no-modify-path", "--default-toolchain", "stable", "--profile", "default"],
+            "post_install": [["rustup", "component", "add", "rustfmt", "clippy"]]
+          }
+        ]
+      },
+      "darwin": {
+        "install": [
+          {
+            "method": "installer",
+            "urls": {
+              "amd64": "https://static.rust-lang.org/rustup/dist/x86_64-apple-darwin/rustup-init",
+              "arm64": "https://static.rust-lang.org/rustup/dist/aarch64-apple-darwin/rustup-init"
+            },
+            "installer_args": ["-y", "--no-modify-path", "--default-toolchain", "stable", "--profile", "default"],
+            "post_install": [["rustup", "component", "add", "rustfmt", "clippy"]]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "java",
+    "display_name": "Java (OpenJDK)",
+    "description": "Java Development Kit, LTS release",
+    "category": "LANGUAGE",
+    "profiles": ["app"],
+    "required": true,
+    "minimum_version": "17.0.0",
+    "stable_policy": "latest-lts",
+    "homepage": "https://openjdk.org",
+    "verify": { "command": "java", "args": ["-version"], "pattern": "version \"([0-9][0-9._]*)\"" },
+    "platforms": {
+      "windows": {
+        "install": [
+          { "method": "package_manager", "manager": "winget", "packages": ["Microsoft.OpenJDK.21"] },
+          { "method": "package_manager", "manager": "winget", "packages": ["EclipseAdoptium.Temurin.21.JDK"] }
+        ]
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["openjdk-21-jdk"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["java-21-openjdk-devel"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["jdk-openjdk"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["java-21-openjdk-devel"], "elevate": true }
+        ]
+      },
+      "darwin": {
+        "notes": "Homebrew keeps the JDK unlinked; Bento adds the keg's bin directory to PATH and sets JAVA_HOME from java_home.",
+        "install": [{ "method": "package_manager", "manager": "brew", "packages": ["openjdk@21"] }],
+        "environment": [{ "name": "JAVA_HOME", "value": "", "from_command": ["/usr/libexec/java_home"], "os": "darwin" }],
+        "path_entries": [{ "path": "bin", "from_command": ["brew", "--prefix", "openjdk@21"], "os": "darwin" }]
+      }
+    }
+  },
+  {
+    "name": "kotlin",
+    "display_name": "Kotlin",
+    "description": "Kotlin command line compiler",
+    "category": "LANGUAGE",
+    "profiles": ["app"],
+    "required": false,
+    "requires": ["java"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://kotlinlang.org",
+    "verify": { "command": "kotlinc", "args": ["-version"], "pattern": "kotlinc-jvm ([0-9]+\\.[0-9]+\\.[0-9]+)" },
+    "platforms": {
+      "windows": {
+        "install": [
+          {
+            "method": "manual",
+            "reason": "JetBrains distributes the Kotlin compiler as a GitHub release archive or through SDKMAN and IntelliJ; there is no official winget package to install from.",
+            "url": "https://kotlinlang.org/docs/command-line.html"
+          }
+        ]
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "snap", "packages": ["kotlin"], "classic": true, "elevate": true },
+          {
+            "method": "manual",
+            "reason": "The Kotlin compiler is published as a snap or a GitHub release archive, and snapd is not available on this system.",
+            "url": "https://kotlinlang.org/docs/command-line.html"
+          }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["kotlin"] }] }
+    }
+  },
+  {
+    "name": "swift",
+    "display_name": "Swift",
+    "description": "Swift programming language toolchain",
+    "category": "LANGUAGE",
+    "profiles": ["app"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.swift.org",
+    "verify": { "command": "swift", "args": ["--version"] },
+    "platforms": {
+      "darwin": {
+        "notes": "Swift ships with the Xcode Command Line Tools.",
+        "install": [{ "method": "bundled" }]
+      },
+      "linux": {
+        "install": [
+          {
+            "method": "manual",
+            "reason": "Swift on Linux is distributed as a distribution-specific tarball that must be matched to the exact OS release; Bento does not guess at that mapping.",
+            "url": "https://www.swift.org/install/linux/"
+          }
+        ]
+      },
+      "windows": {
+        "install": [
+          {
+            "method": "manual",
+            "reason": "Swift on Windows requires the Visual Studio toolchain and a separate installer package from swift.org.",
+            "url": "https://www.swift.org/install/windows/"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "dotnet",
+    "display_name": ".NET SDK (C#)",
+    "description": "C# compiler, runtime and SDK",
+    "category": "SDK",
+    "profiles": ["app"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://dotnet.microsoft.com",
+    "verify": { "command": "dotnet", "args": ["--version"] },
+    "platforms": {
+      "windows": {
+        "install": [
+          { "method": "package_manager", "manager": "winget", "packages": ["Microsoft.DotNet.SDK.9"] },
+          { "method": "package_manager", "manager": "winget", "packages": ["Microsoft.DotNet.SDK.8"] }
+        ]
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["dotnet-sdk-9.0"], "elevate": true },
+          { "method": "package_manager", "manager": "apt", "packages": ["dotnet-sdk-8.0"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["dotnet-sdk-9.0"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["dotnet-sdk"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["dotnet-sdk-9.0"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["dotnet-sdk"], "cask": true }] }
+    }
+  }
+]

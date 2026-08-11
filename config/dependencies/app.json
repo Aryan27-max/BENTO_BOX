@@ -1,0 +1,222 @@
+[
+  {
+    "name": "gradle",
+    "display_name": "Gradle",
+    "description": "JVM build automation tool",
+    "category": "DEVELOPMENT_TOOL",
+    "profiles": ["app"],
+    "required": false,
+    "requires": ["java"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://gradle.org",
+    "verify": { "command": "gradle", "args": ["--version"], "pattern": "Gradle ([0-9]+\\.[0-9]+(?:\\.[0-9]+)?)" },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["Gradle.Gradle"] }] },
+      "linux": {
+        "notes": "Distribution packages of Gradle are often several major versions behind; the official snap is preferred where snapd exists.",
+        "install": [
+          { "method": "package_manager", "manager": "snap", "packages": ["gradle"], "classic": true, "elevate": true },
+          { "method": "package_manager", "manager": "apt", "packages": ["gradle"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["gradle"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["gradle"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["gradle"] }] }
+    }
+  },
+  {
+    "name": "android-platform-tools",
+    "display_name": "Android Platform Tools",
+    "description": "adb, fastboot and friends",
+    "category": "SDK",
+    "profiles": ["app"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://developer.android.com/tools/releases/platform-tools",
+    "verify": { "command": "adb", "args": ["--version"], "pattern": "Android Debug Bridge version ([0-9.]+)" },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["Google.PlatformTools"] }] },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["android-sdk-platform-tools"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["android-tools"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["android-tools"], "elevate": true },
+          {
+            "method": "archive",
+            "url": "https://dl.google.com/android/repository/platform-tools-latest-linux.zip",
+            "install_dir": "android-platform-tools"
+          }
+        ]
+      },
+      "darwin": {
+        "install": [
+          { "method": "package_manager", "manager": "brew", "packages": ["android-platform-tools"], "cask": true },
+          {
+            "method": "archive",
+            "url": "https://dl.google.com/android/repository/platform-tools-latest-darwin.zip",
+            "install_dir": "android-platform-tools"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "android-studio",
+    "display_name": "Android Studio",
+    "description": "Android IDE, which also provides the Android SDK",
+    "category": "GUI_APPLICATION",
+    "profiles": ["app"],
+    "required": false,
+    "requires": ["java"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://developer.android.com/studio",
+    "notes": "The SDK itself is downloaded by Android Studio's first-run wizard. Bento sets ANDROID_HOME only once that directory actually exists.",
+    "verify": {
+      "skip_version": true,
+      "paths": {
+        "windows": ["${PROGRAMFILES}/Android/Android Studio/bin/studio64.exe"],
+        "darwin": ["/Applications/Android Studio.app"],
+        "linux": ["/opt/android-studio/bin/studio.sh", "/snap/bin/android-studio"]
+      }
+    },
+    "environment": [
+      { "name": "ANDROID_HOME", "value": "${LOCALAPPDATA}/Android/Sdk", "os": "windows", "require_path": true },
+      { "name": "ANDROID_SDK_ROOT", "value": "${LOCALAPPDATA}/Android/Sdk", "os": "windows", "require_path": true },
+      { "name": "ANDROID_HOME", "value": "${HOME}/Android/Sdk", "os": "linux", "require_path": true },
+      { "name": "ANDROID_SDK_ROOT", "value": "${HOME}/Android/Sdk", "os": "linux", "require_path": true },
+      { "name": "ANDROID_HOME", "value": "${HOME}/Library/Android/sdk", "os": "darwin", "require_path": true },
+      { "name": "ANDROID_SDK_ROOT", "value": "${HOME}/Library/Android/sdk", "os": "darwin", "require_path": true }
+    ],
+    "path_entries": [
+      { "path": "${LOCALAPPDATA}/Android/Sdk/platform-tools", "os": "windows" },
+      { "path": "${HOME}/Android/Sdk/platform-tools", "os": "linux" },
+      { "path": "${HOME}/Library/Android/sdk/platform-tools", "os": "darwin" }
+    ],
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["Google.AndroidStudio"] }] },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "snap", "packages": ["android-studio"], "classic": true, "elevate": true },
+          {
+            "method": "manual",
+            "reason": "Android Studio is published as a tarball for Linux and snapd is not available on this system.",
+            "url": "https://developer.android.com/studio"
+          }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["android-studio"], "cask": true }] }
+    }
+  },
+  {
+    "name": "flutter",
+    "display_name": "Flutter",
+    "description": "Cross-platform application SDK",
+    "category": "SDK",
+    "profiles": ["app"],
+    "required": true,
+    "requires": ["git"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://flutter.dev",
+    "verify": { "command": "flutter", "args": ["--version"], "pattern": "Flutter ([0-9]+\\.[0-9]+\\.[0-9]+)" },
+    "platforms": {
+      "windows": {
+        "notes": "Installed from the official stable release archive listed in Google's releases manifest.",
+        "install": [{ "method": "archive", "resolver": "flutter_stable", "install_dir": "flutter" }]
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "snap", "packages": ["flutter"], "classic": true, "elevate": true },
+          { "method": "archive", "resolver": "flutter_stable", "install_dir": "flutter" }
+        ]
+      },
+      "darwin": {
+        "install": [
+          { "method": "package_manager", "manager": "brew", "packages": ["flutter"], "cask": true },
+          { "method": "archive", "resolver": "flutter_stable", "install_dir": "flutter" }
+        ]
+      }
+    }
+  },
+  {
+    "name": "dart",
+    "display_name": "Dart",
+    "description": "Dart SDK, shipped as part of Flutter",
+    "category": "LANGUAGE",
+    "profiles": ["app"],
+    "required": false,
+    "requires": ["flutter"],
+    "homepage": "https://dart.dev",
+    "verify": { "command": "dart", "args": ["--version"], "pattern": "Dart SDK version: ([0-9.]+)" },
+    "platforms": {
+      "windows": { "install": [{ "method": "bundled" }] },
+      "linux": { "install": [{ "method": "bundled" }] },
+      "darwin": { "install": [{ "method": "bundled" }] }
+    }
+  },
+  {
+    "name": "xcode",
+    "display_name": "Xcode",
+    "description": "Apple's IDE and iOS toolchain",
+    "category": "GUI_APPLICATION",
+    "profiles": ["app"],
+    "required": false,
+    "homepage": "https://developer.apple.com/xcode/",
+    "unsupported": {
+      "windows": "Xcode is macOS-only.",
+      "linux": "Xcode is macOS-only."
+    },
+    "verify": {
+      "skip_version": true,
+      "paths": { "darwin": ["/Applications/Xcode.app"] }
+    },
+    "platforms": {
+      "darwin": {
+        "install": [
+          {
+            "method": "manual",
+            "reason": "Xcode is a multi-gigabyte Mac App Store download that requires an Apple ID; Bento will not drive the App Store on your behalf.",
+            "url": "https://apps.apple.com/app/xcode/id497799835"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "xcode-command-line-tools",
+    "display_name": "Xcode Command Line Tools",
+    "description": "Apple's compiler toolchain, headers and git",
+    "category": "DEVELOPMENT_TOOL",
+    "profiles": ["app"],
+    "required": false,
+    "homepage": "https://developer.apple.com/xcode/",
+    "unsupported": {
+      "windows": "The Xcode Command Line Tools are macOS-only.",
+      "linux": "The Xcode Command Line Tools are macOS-only."
+    },
+    "verify": { "command": "xcode-select", "args": ["-p"], "skip_version": true },
+    "platforms": {
+      "darwin": {
+        "notes": "xcode-select --install opens a system dialog; the download itself is handled by macOS.",
+        "install": [{ "method": "command", "command": ["xcode-select", "--install"] }]
+      }
+    }
+  },
+  {
+    "name": "cocoapods",
+    "display_name": "CocoaPods",
+    "description": "Dependency manager for iOS and macOS projects",
+    "category": "PACKAGE_MANAGER",
+    "profiles": ["app"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://cocoapods.org",
+    "unsupported": {
+      "windows": "CocoaPods manages Xcode project dependencies and only applies to macOS.",
+      "linux": "CocoaPods manages Xcode project dependencies and only applies to macOS."
+    },
+    "verify": { "command": "pod", "args": ["--version"] },
+    "platforms": {
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["cocoapods"] }] }
+    }
+  }
+]

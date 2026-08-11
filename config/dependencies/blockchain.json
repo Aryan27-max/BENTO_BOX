@@ -1,0 +1,88 @@
+[
+  {
+    "name": "foundry",
+    "display_name": "Foundry",
+    "description": "EVM development toolkit: forge, cast, anvil and chisel",
+    "category": "DEVELOPMENT_TOOL",
+    "profiles": ["blockchain"],
+    "required": true,
+    "requires": ["rust"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://getfoundry.sh",
+    "notes": "Bento builds Foundry from its official repository with cargo instead of piping foundryup's install script into a shell. The build takes a while but comes from source Bento can point at.",
+    "verify": {
+      "command": "forge",
+      "args": ["--version"],
+      "components": [
+        { "name": "cast", "command": "cast", "args": ["--version"] },
+        { "name": "anvil", "command": "anvil", "args": ["--version"] }
+      ]
+    },
+    "platforms": {
+      "windows": {
+        "install": [
+          {
+            "method": "language_package",
+            "via": "cargo",
+            "packages": ["forge", "cast", "anvil"],
+            "args": ["--git", "https://github.com/foundry-rs/foundry", "--profile", "release", "--locked"]
+          }
+        ]
+      },
+      "linux": {
+        "install": [
+          {
+            "method": "language_package",
+            "via": "cargo",
+            "packages": ["forge", "cast", "anvil"],
+            "args": ["--git", "https://github.com/foundry-rs/foundry", "--profile", "release", "--locked"]
+          }
+        ]
+      },
+      "darwin": {
+        "install": [
+          {
+            "method": "package_manager",
+            "manager": "brew",
+            "packages": ["foundry"],
+            "pre_install": [["brew", "tap", "foundry-rs/foundry"]]
+          },
+          {
+            "method": "language_package",
+            "via": "cargo",
+            "packages": ["forge", "cast", "anvil"],
+            "args": ["--git", "https://github.com/foundry-rs/foundry", "--profile", "release", "--locked"]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "solidity",
+    "display_name": "Solidity Compiler",
+    "description": "solc compiler for Solidity contracts",
+    "category": "LANGUAGE",
+    "profiles": ["blockchain"],
+    "required": false,
+    "requires": ["npm"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://soliditylang.org",
+    "notes": "Installed as the official solc-js build, which runs anywhere Node.js does. Foundry manages its own solc versions per project independently of this.",
+    "verify": { "command": "solcjs", "args": ["--version"] },
+    "platforms": {
+      "windows": { "install": [{ "method": "language_package", "via": "npm", "packages": ["solc"] }] },
+      "linux": { "install": [{ "method": "language_package", "via": "npm", "packages": ["solc"] }] },
+      "darwin": {
+        "install": [
+          { "method": "language_package", "via": "npm", "packages": ["solc"] },
+          {
+            "method": "package_manager",
+            "manager": "brew",
+            "packages": ["solidity"],
+            "pre_install": [["brew", "tap", "ethereum/ethereum"]]
+          }
+        ]
+      }
+    }
+  }
+]

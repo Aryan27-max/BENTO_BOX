@@ -1,0 +1,190 @@
+[
+  {
+    "name": "jupyterlab",
+    "display_name": "JupyterLab",
+    "description": "Notebook environment, including the classic jupyter command",
+    "category": "DEVELOPMENT_TOOL",
+    "profiles": ["ai"],
+    "required": false,
+    "requires": ["pip"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://jupyter.org",
+    "verify": { "command": "jupyter", "args": ["--version"], "pattern": "jupyter_core\\s+:\\s+([0-9.]+)" },
+    "platforms": {
+      "windows": { "install": [{ "method": "language_package", "via": "pip", "packages": ["jupyterlab", "notebook"] }] },
+      "linux": { "install": [{ "method": "language_package", "via": "pip", "packages": ["jupyterlab", "notebook"] }] },
+      "darwin": { "install": [{ "method": "language_package", "via": "pip", "packages": ["jupyterlab", "notebook"] }] }
+    }
+  },
+  {
+    "name": "numpy",
+    "display_name": "NumPy",
+    "description": "Numerical computing library",
+    "category": "LIBRARY",
+    "profiles": ["ai"],
+    "required": false,
+    "requires": ["pip"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://numpy.org",
+    "verify": { "command": "python3", "args": ["-c", "import numpy, sys; sys.stdout.write(numpy.__version__)"] },
+    "platforms": {
+      "windows": {
+        "install": [{ "method": "language_package", "via": "pip", "packages": ["numpy"] }],
+        "verify": { "command": "python", "args": ["-c", "import numpy, sys; sys.stdout.write(numpy.__version__)"] }
+      },
+      "linux": { "install": [{ "method": "language_package", "via": "pip", "packages": ["numpy"] }] },
+      "darwin": { "install": [{ "method": "language_package", "via": "pip", "packages": ["numpy"] }] }
+    }
+  },
+  {
+    "name": "pandas",
+    "display_name": "pandas",
+    "description": "Data analysis and manipulation library",
+    "category": "LIBRARY",
+    "profiles": ["ai"],
+    "required": false,
+    "requires": ["numpy"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://pandas.pydata.org",
+    "verify": { "command": "python3", "args": ["-c", "import pandas, sys; sys.stdout.write(pandas.__version__)"] },
+    "platforms": {
+      "windows": {
+        "install": [{ "method": "language_package", "via": "pip", "packages": ["pandas"] }],
+        "verify": { "command": "python", "args": ["-c", "import pandas, sys; sys.stdout.write(pandas.__version__)"] }
+      },
+      "linux": { "install": [{ "method": "language_package", "via": "pip", "packages": ["pandas"] }] },
+      "darwin": { "install": [{ "method": "language_package", "via": "pip", "packages": ["pandas"] }] }
+    }
+  },
+  {
+    "name": "scikit-learn",
+    "display_name": "scikit-learn",
+    "description": "Classical machine learning library",
+    "category": "LIBRARY",
+    "profiles": ["ai"],
+    "required": false,
+    "requires": ["numpy"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://scikit-learn.org",
+    "verify": { "command": "python3", "args": ["-c", "import sklearn, sys; sys.stdout.write(sklearn.__version__)"] },
+    "platforms": {
+      "windows": {
+        "install": [{ "method": "language_package", "via": "pip", "packages": ["scikit-learn"] }],
+        "verify": { "command": "python", "args": ["-c", "import sklearn, sys; sys.stdout.write(sklearn.__version__)"] }
+      },
+      "linux": { "install": [{ "method": "language_package", "via": "pip", "packages": ["scikit-learn"] }] },
+      "darwin": { "install": [{ "method": "language_package", "via": "pip", "packages": ["scikit-learn"] }] }
+    }
+  },
+  {
+    "name": "pytorch",
+    "display_name": "PyTorch",
+    "description": "Deep learning framework",
+    "category": "LIBRARY",
+    "profiles": ["ai"],
+    "required": false,
+    "requires": ["pip"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://pytorch.org",
+    "notes": "Bento installs the default PyPI build. On Linux that wheel bundles CUDA support; a CPU-only or differently versioned CUDA build must be selected deliberately from pytorch.org.",
+    "verify": { "command": "python3", "args": ["-c", "import torch, sys; sys.stdout.write(torch.__version__)"] },
+    "platforms": {
+      "windows": {
+        "install": [{ "method": "language_package", "via": "pip", "packages": ["torch", "torchvision", "torchaudio"] }],
+        "verify": { "command": "python", "args": ["-c", "import torch, sys; sys.stdout.write(torch.__version__)"] }
+      },
+      "linux": { "install": [{ "method": "language_package", "via": "pip", "packages": ["torch", "torchvision", "torchaudio"] }] },
+      "darwin": { "install": [{ "method": "language_package", "via": "pip", "packages": ["torch", "torchvision", "torchaudio"] }] }
+    }
+  },
+  {
+    "name": "tensorflow",
+    "display_name": "TensorFlow",
+    "description": "Machine learning platform",
+    "category": "LIBRARY",
+    "profiles": ["ai"],
+    "required": false,
+    "requires": ["pip"],
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.tensorflow.org",
+    "verify": { "command": "python3", "args": ["-c", "import tensorflow, sys; sys.stdout.write(tensorflow.__version__)"] },
+    "platforms": {
+      "windows": {
+        "notes": "TensorFlow dropped native Windows GPU support after 2.10; the Windows wheel is CPU-only.",
+        "install": [{ "method": "language_package", "via": "pip", "packages": ["tensorflow"] }],
+        "verify": { "command": "python", "args": ["-c", "import tensorflow, sys; sys.stdout.write(tensorflow.__version__)"] }
+      },
+      "linux": { "install": [{ "method": "language_package", "via": "pip", "packages": ["tensorflow"] }] },
+      "darwin": { "install": [{ "method": "language_package", "via": "pip", "packages": ["tensorflow"] }] }
+    }
+  },
+  {
+    "name": "ollama",
+    "display_name": "Ollama",
+    "description": "Run large language models locally",
+    "category": "SERVICE",
+    "profiles": ["ai"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://ollama.com",
+    "verify": { "command": "ollama", "args": ["--version"], "pattern": "version is ([0-9.]+)" },
+    "service": {
+      "names": { "linux": "ollama", "darwin": "ollama", "windows": "ollama" },
+      "required": false,
+      "manual": true,
+      "notes": "Ollama runs as a user-launched background server; Bento installs it but does not start or enable it."
+    },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["Ollama.Ollama"] }] },
+      "linux": {
+        "notes": "Installed from Ollama's official release tarball rather than by piping their install script into a shell.",
+        "install": [
+          {
+            "method": "archive",
+            "urls": {
+              "amd64": "https://ollama.com/download/ollama-linux-amd64.tgz",
+              "arm64": "https://ollama.com/download/ollama-linux-arm64.tgz"
+            },
+            "install_dir": "ollama"
+          }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["ollama"], "cask": true }] }
+    }
+  },
+  {
+    "name": "cuda-toolkit",
+    "display_name": "CUDA Toolkit",
+    "description": "NVIDIA GPU compute toolkit",
+    "category": "SDK",
+    "profiles": ["ai"],
+    "required": false,
+    "requires_gpu": "nvidia",
+    "stable_policy": "latest-stable",
+    "homepage": "https://developer.nvidia.com/cuda-toolkit",
+    "notes": "Only planned when an NVIDIA GPU is actually detected. Bento never installs CUDA on a machine that cannot use it.",
+    "verify": { "command": "nvcc", "args": ["--version"], "pattern": "release ([0-9]+\\.[0-9]+)" },
+    "unsupported": {
+      "darwin": "NVIDIA CUDA has not been supported on macOS since macOS 10.13."
+    },
+    "platforms": {
+      "windows": {
+        "elevate": true,
+        "restart_required": true,
+        "install": [{ "method": "package_manager", "manager": "winget", "packages": ["Nvidia.CUDA"] }]
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["nvidia-cuda-toolkit"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["cuda"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["cuda"], "elevate": true },
+          {
+            "method": "manual",
+            "reason": "This distribution does not package the CUDA toolkit; NVIDIA's own repository must be added first.",
+            "url": "https://developer.nvidia.com/cuda-downloads"
+          }
+        ]
+      }
+    }
+  }
+]

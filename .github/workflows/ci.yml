@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Bento's behaviour is platform-specific by nature, so the suite runs
+        # on all three operating systems it supports rather than only Linux.
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          check-latest: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Verify module integrity
+        run: go mod verify
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test -race ./...
+
+  format:
+    name: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: gofmt
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "These files are not gofmt-formatted:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+  catalog:
+    name: Catalog validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      # The dependency catalog is data, so it gets its own gate: an unknown
+      # category, a dangling prerequisite or a plain-HTTP download must never
+      # reach a release.
+      - name: Validate the shipped dependency catalog
+        run: go test -run 'TestShipped|TestNuke|TestEveryDependency|TestDownloadsUseHTTPS|TestGUI' -v ./internal/catalog/...
+
+      - name: Resolve every profile on every platform
+        run: go test -run TestRealCatalogResolvesOnEveryPlatform -v ./internal/resolver/...
+
+  build:
+    name: Cross-compile ${{ matrix.goos }}/${{ matrix.goarch }}
+    runs-on: ubuntu-latest
+    needs: [test]
+    strategy:
+      matrix:
+        include:
+          - { goos: windows, goarch: amd64, ext: .exe }
+          - { goos: windows, goarch: arm64, ext: .exe }
+          - { goos: linux,   goarch: amd64, ext: '' }
+          - { goos: linux,   goarch: arm64, ext: '' }
+          - { goos: darwin,  goarch: amd64, ext: '' }
+          - { goos: darwin,  goarch: arm64, ext: '' }
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      # This is the step that keeps the core promise honest: the artefact is a
+      # static binary a user can run without installing Go or anything else.
+      - name: Build
+        env:
+          CGO_ENABLED: 0
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          go build -trimpath \
+            -ldflags "-s -w -X github.com/Aryan27-max/bento-box/internal/cli.Version=ci-${GITHUB_SHA::7}" \
+            -o "dist/bento-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.ext }}" \
+            ./cmd/bento
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bento-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/*
+          retention-days: 14

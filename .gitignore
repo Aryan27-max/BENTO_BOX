@@ -1,0 +1,15 @@
+# Build output
+/bento
+/bento.exe
+/dist/
+*.exe
+*.test
+
+# Bento's own working directory, if a developer runs it from the repo
+/.bento/
+
+# Editor and OS noise
+.DS_Store
+.idea/
+.vscode/
+*.swp

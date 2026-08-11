@@ -1,0 +1,50 @@
+[
+  {
+    "id": "core",
+    "name": "Core",
+    "emoji": "🧰",
+    "description": "Tooling every developer needs, inherited by every profile",
+    "order": 0
+  },
+  {
+    "id": "ai",
+    "name": "AI / ML",
+    "emoji": "🤖",
+    "description": "Python, notebooks, PyTorch, TensorFlow, Ollama",
+    "aliases": ["ai-ml", "aiml", "ml", "machine-learning"],
+    "order": 1
+  },
+  {
+    "id": "web",
+    "name": "Web",
+    "emoji": "🌐",
+    "description": "Node.js, TypeScript, Bun, Postgres, Mongo, Redis",
+    "aliases": ["frontend", "backend", "fullstack"],
+    "order": 2
+  },
+  {
+    "id": "blockchain",
+    "name": "Blockchain",
+    "emoji": "⛓️",
+    "description": "Foundry, Solidity, Go and Rust toolchains",
+    "aliases": ["web3", "chain", "evm"],
+    "order": 3
+  },
+  {
+    "id": "app",
+    "name": "App",
+    "emoji": "📱",
+    "description": "Flutter, Android SDK, JDK, Kotlin, Gradle",
+    "aliases": ["mobile", "android"],
+    "order": 4
+  },
+  {
+    "id": "nuke",
+    "name": "NUKE — I WANT IT ALL",
+    "emoji": "☢️",
+    "description": "Every profile at once, deduplicated into one plan",
+    "includes": ["ai", "web", "blockchain", "app"],
+    "aliases": ["all", "everything"],
+    "order": 5
+  }
+]

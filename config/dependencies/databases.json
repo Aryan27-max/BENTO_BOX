@@ -1,0 +1,198 @@
+[
+  {
+    "name": "postgresql",
+    "display_name": "PostgreSQL",
+    "description": "Relational database server and psql client",
+    "category": "DATABASE",
+    "profiles": ["ai", "web", "blockchain", "app"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.postgresql.org",
+    "verify": { "command": "psql", "args": ["--version"] },
+    "service": {
+      "names": { "linux": "postgresql", "darwin": "postgresql", "windows": "postgresql" },
+      "required": false,
+      "notes": "Installed and running are separate states; Bento reports the service without starting it unless a profile requires it."
+    },
+    "platforms": {
+      "windows": {
+        "elevate": true,
+        "notes": "The Windows installer registers a service named postgresql-x64-<major>; Bento reports the service state it can observe rather than assuming a name.",
+        "install": [
+          { "method": "package_manager", "manager": "winget", "packages": ["PostgreSQL.PostgreSQL.17"] },
+          { "method": "package_manager", "manager": "winget", "packages": ["PostgreSQL.PostgreSQL.16"] }
+        ]
+      },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["postgresql", "postgresql-client"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["postgresql-server", "postgresql"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["postgresql"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["postgresql-server", "postgresql"], "elevate": true }
+        ]
+      },
+      "darwin": {
+        "install": [
+          { "method": "package_manager", "manager": "brew", "packages": ["postgresql@17"] },
+          { "method": "package_manager", "manager": "brew", "packages": ["postgresql"] }
+        ]
+      }
+    }
+  },
+  {
+    "name": "mysql",
+    "display_name": "MySQL",
+    "description": "Relational database server and client",
+    "category": "DATABASE",
+    "profiles": ["web", "app"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.mysql.com",
+    "verify": { "command": "mysql", "args": ["--version"] },
+    "service": { "names": { "linux": "mysql", "darwin": "mysql", "windows": "MySQL" }, "required": false },
+    "platforms": {
+      "windows": {
+        "elevate": true,
+        "install": [{ "method": "package_manager", "manager": "winget", "packages": ["Oracle.MySQL"] }]
+      },
+      "linux": {
+        "notes": "Fedora, Arch and openSUSE ship MariaDB as their MySQL-compatible server.",
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["mysql-server", "mysql-client"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["mariadb-server", "mariadb"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["mariadb"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["mariadb", "mariadb-client"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["mysql"] }] }
+    }
+  },
+  {
+    "name": "mongodb",
+    "display_name": "MongoDB",
+    "description": "Document database server",
+    "category": "DATABASE",
+    "profiles": ["ai", "web", "blockchain", "app"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.mongodb.com",
+    "verify": { "command": "mongod", "args": ["--version"], "pattern": "db version v([0-9.]+)" },
+    "service": { "names": { "linux": "mongod", "darwin": "mongodb-community", "windows": "MongoDB" }, "required": false },
+    "platforms": {
+      "windows": {
+        "elevate": true,
+        "install": [{ "method": "package_manager", "manager": "winget", "packages": ["MongoDB.Server"] }]
+      },
+      "linux": {
+        "install": [
+          {
+            "method": "manual",
+            "reason": "MongoDB Community Server is not in the default Debian, Ubuntu, Fedora or openSUSE archives; it requires adding MongoDB's own repository and signing key, which Bento will not do without you choosing it.",
+            "url": "https://www.mongodb.com/docs/manual/administration/install-on-linux/"
+          }
+        ]
+      },
+      "darwin": {
+        "install": [
+          {
+            "method": "package_manager",
+            "manager": "brew",
+            "packages": ["mongodb-community"],
+            "pre_install": [["brew", "tap", "mongodb/brew"]]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "mongosh",
+    "display_name": "MongoDB Shell",
+    "description": "Official MongoDB command line client",
+    "category": "DATABASE_CLIENT",
+    "profiles": ["ai", "web", "blockchain", "app"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.mongodb.com/docs/mongodb-shell/",
+    "verify": { "command": "mongosh", "args": ["--version"] },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["MongoDB.Shell"] }] },
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "snap", "packages": ["mongosh"], "elevate": true },
+          {
+            "method": "manual",
+            "reason": "mongosh is published through MongoDB's own repository or as a standalone archive, and snapd is not available on this system.",
+            "url": "https://www.mongodb.com/docs/mongodb-shell/install/"
+          }
+        ]
+      },
+      "darwin": {
+        "install": [
+          {
+            "method": "package_manager",
+            "manager": "brew",
+            "packages": ["mongosh"],
+            "pre_install": [["brew", "tap", "mongodb/brew"]]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "mongodb-compass",
+    "display_name": "MongoDB Compass",
+    "description": "Graphical MongoDB client",
+    "category": "GUI_APPLICATION",
+    "profiles": ["ai", "web"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://www.mongodb.com/products/tools/compass",
+    "verify": {
+      "skip_version": true,
+      "paths": {
+        "windows": ["${LOCALAPPDATA}/MongoDBCompass/MongoDBCompass.exe"],
+        "darwin": ["/Applications/MongoDB Compass.app"],
+        "linux": ["/usr/bin/mongodb-compass", "/opt/MongoDB Compass/mongodb-compass"]
+      }
+    },
+    "platforms": {
+      "windows": { "install": [{ "method": "package_manager", "manager": "winget", "packages": ["MongoDB.Compass.Full"] }] },
+      "linux": {
+        "install": [
+          {
+            "method": "manual",
+            "reason": "Compass is published as version-pinned .deb and .rpm downloads with no stable latest URL, so Bento cannot fetch it reliably.",
+            "url": "https://www.mongodb.com/try/download/compass"
+          }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["mongodb-compass"], "cask": true }] }
+    }
+  },
+  {
+    "name": "redis",
+    "display_name": "Redis",
+    "description": "In-memory data store",
+    "category": "DATABASE",
+    "profiles": ["ai", "web", "blockchain"],
+    "required": false,
+    "stable_policy": "latest-stable",
+    "homepage": "https://redis.io",
+    "verify": { "command": "redis-cli", "args": ["--version"] },
+    "service": { "names": { "linux": "redis-server", "darwin": "redis" }, "required": false },
+    "unsupported": {
+      "windows": "Redis publishes no official Windows build. Run it under WSL2 or in a Docker container instead."
+    },
+    "platforms": {
+      "linux": {
+        "install": [
+          { "method": "package_manager", "manager": "apt", "packages": ["redis-server"], "elevate": true },
+          { "method": "package_manager", "manager": "dnf", "packages": ["redis"], "elevate": true },
+          { "method": "package_manager", "manager": "pacman", "packages": ["redis"], "elevate": true },
+          { "method": "package_manager", "manager": "zypper", "packages": ["redis"], "elevate": true }
+        ]
+      },
+      "darwin": { "install": [{ "method": "package_manager", "manager": "brew", "packages": ["redis"] }] }
+    }
+  }
+]
