@@ -1,4 +1,4 @@
-# Contributing to BENTO-BOX
+# Contributing to BENTO-BOX🍱 
 
 First off, thank you for your interest in contributing to BENTO-BOX! 🎉
 
