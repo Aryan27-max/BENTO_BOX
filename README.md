@@ -34,27 +34,48 @@ Bento is written in Go, but Go is a **build-time** dependency only. Released
 binaries are self-contained: one file, statically linked, no runtime, no
 interpreter, no toolchain.
 
-Download the binary for your platform, make it executable, run it:
+Download the binary for your platform from the
+[Releases page](https://github.com/Aryan27-max/bento-box/releases), make it
+executable, run it:
 
 | Platform | Binary |
 | --- | --- |
-| Windows | `bento-windows-amd64.exe`, `bento-windows-arm64.exe` |
-| Linux | `bento-linux-amd64`, `bento-linux-arm64` |
-| macOS | `bento-darwin-amd64`, `bento-darwin-arm64` |
+| Windows x64 | `bento-windows-amd64.exe` |
+| Windows ARM64 | `bento-windows-arm64.exe` |
+| Linux x64 | `bento-linux-amd64` |
+| Linux ARM64 | `bento-linux-arm64` |
+| macOS Intel | `bento-darwin-amd64` |
+| macOS Apple Silicon | `bento-darwin-arm64` |
+
+**Windows** — PowerShell, in the folder you downloaded to:
 
 ```powershell
-# Windows
-.\bento.exe
+.\bento-windows-amd64.exe
 ```
+
+**Linux** — bash:
 
 ```bash
-# Linux and macOS
-chmod +x ./bento
-./bento
+chmod +x ./bento-linux-amd64
+./bento-linux-amd64
 ```
 
+**macOS** — bash or zsh. macOS quarantines downloaded binaries, so clear the
+attribute once:
+
+```bash
+chmod +x ./bento-darwin-arm64
+xattr -d com.apple.quarantine ./bento-darwin-arm64
+./bento-darwin-arm64
+```
+
+On every platform, pick the binary matching your architecture: ARM64 machines
+(Windows on ARM, Raspberry Pi and friends, Apple Silicon) need the `arm64`
+build, not the `amd64` one.
+
 `go run` and `go build` are developer workflows. They are not how anyone is
-meant to use the product.
+meant to use the product. Per-platform end-user instructions, including
+checksum verification, are in [startcmd.md](startcmd.md).
 
 ---
 
@@ -112,9 +133,9 @@ bento                            # choose a profile interactively
 bento --profile web              # skip the menu
 bento --profile nuke --dry-run   # see exactly what would happen, change nothing
 bento --profile ai --yes         # unattended
-bento --plan                      # show the plan and stop
-bento --json                      # machine-readable report on stdout
-bento --list                      # list the profiles
+bento --plan                     # show the plan and stop
+bento --json                     # machine-readable report on stdout
+bento --list                     # list the profiles
 ```
 
 | Flag | Effect |
@@ -127,9 +148,14 @@ bento --list                      # list the profiles
 | `--verbose` | Show every installation step |
 | `--no-color` | Disable colour |
 | `-v, --version` | Print the version |
+| `-h, --help` | Show the help text |
 
 Exit codes: `0` success · `1` a dependency failed · `2` usage error ·
 `130` you cancelled.
+
+Every command above works identically on Windows, Linux and macOS; only the
+way you invoke the binary differs by platform. See
+[startcmd.md](startcmd.md) for the per-platform form.
 
 ---
 
@@ -285,27 +311,242 @@ a tool is a data change.
 
 ---
 
-## Development
+## Development setup
 
-Contributors need Go 1.25 or newer. Users do not.
+Contributors need **Go 1.25 or newer** and **Git**. Users do not — see
+[above](#you-do-not-need-go-to-run-bento).
 
-```bash
+Find your operating system below and run the steps **in order**. Each step
+assumes the previous one succeeded. Nothing here is optional or interchangeable
+between platforms.
+
+### Windows
+
+All commands are **PowerShell**.
+
+**Step 1 — Install the prerequisites.** Bento does not assume you have either
+tool. Download and run the Go installer for Windows from
+[go.dev/dl](https://go.dev/dl/) and Git from
+[git-scm.com/download/win](https://git-scm.com/download/win). If you already
+have winget, this is equivalent and simpler:
+
+```powershell
+winget install --id GoLang.Go --source winget
+winget install --id Git.Git --source winget
+```
+
+Close PowerShell and open a new window afterwards, so the installers' PATH
+changes take effect.
+
+**Step 2 — Verify Go.**
+
+```powershell
+go version
+```
+
+Expected — the patch number will differ, and anything **1.25 or newer** is fine:
+
+```text
+go version go1.25.0 windows/amd64
+```
+
+**Step 3 — Clone the repository.**
+
+```powershell
 git clone https://github.com/Aryan27-max/bento-box.git
+```
+
+**Step 4 — Enter the repository.**
+
+```powershell
 cd bento-box
+```
+
+**Step 5 — Build the project.**
+
+```powershell
 go build ./...
+```
+
+**Step 6 — Run the tests.**
+
+```powershell
 go test ./...
+```
+
+**Step 7 — Run Bento from source.**
+
+```powershell
 go run ./cmd/bento --dry-run
 ```
 
-Full command reference, including release builds for every platform, is in
+`--dry-run` changes nothing on your machine. Formatting, static analysis and
+release builds continue in [startcmd.md](startcmd.md).
+
+### Linux
+
+All commands are **bash**.
+
+**Step 1 — Install the prerequisites.** Bento needs Go 1.25 or newer, and
+distribution packages are frequently older than that, so install Go from the
+official tarball. Check [go.dev/dl](https://go.dev/dl/) for the current version
+and substitute it below; on an ARM64 machine use the `linux-arm64` tarball
+instead of `linux-amd64`:
+
+```bash
+curl -LO https://go.dev/dl/go1.25.0.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf go1.25.0.linux-amd64.tar.gz
+export PATH=$PATH:/usr/local/go/bin
+```
+
+Add that last line to `~/.bashrc` (or `~/.zshrc`) to make it permanent. Git
+comes from your distribution's package manager:
+
+| Distribution | Command |
+| --- | --- |
+| Debian, Ubuntu | `sudo apt update && sudo apt install -y git` |
+| Fedora, RHEL | `sudo dnf install -y git` |
+| Arch | `sudo pacman -S --needed git` |
+| openSUSE | `sudo zypper install -y git` |
+
+**Step 2 — Verify Go.**
+
+```bash
+go version
+```
+
+Expected — the patch number will differ, and anything **1.25 or newer** is fine:
+
+```text
+go version go1.25.0 linux/amd64
+```
+
+**Step 3 — Clone the repository.**
+
+```bash
+git clone https://github.com/Aryan27-max/bento-box.git
+```
+
+**Step 4 — Enter the repository.**
+
+```bash
+cd bento-box
+```
+
+**Step 5 — Build the project.**
+
+```bash
+go build ./...
+```
+
+**Step 6 — Run the tests.**
+
+```bash
+go test ./...
+```
+
+**Step 7 — Run Bento from source.**
+
+```bash
+go run ./cmd/bento --dry-run
+```
+
+`--dry-run` changes nothing on your machine. Formatting, static analysis and
+release builds continue in [startcmd.md](startcmd.md).
+
+### macOS
+
+All commands are **zsh** (the macOS default) or bash.
+
+**Step 1 — Install the prerequisites.** Download and run the Go package from
+[go.dev/dl](https://go.dev/dl/) — `darwin-arm64` on Apple Silicon,
+`darwin-amd64` on Intel — or use Homebrew if you have it:
+
+```bash
+brew install go
+```
+
+Git ships with the Xcode Command Line Tools. If `git --version` prompts you or
+fails, install them once:
+
+```bash
+xcode-select --install
+```
+
+**Step 2 — Verify Go.**
+
+```bash
+go version
+```
+
+Expected — the patch number will differ, and anything **1.25 or newer** is fine:
+
+```text
+go version go1.25.0 darwin/arm64
+```
+
+**Step 3 — Clone the repository.**
+
+```bash
+git clone https://github.com/Aryan27-max/bento-box.git
+```
+
+**Step 4 — Enter the repository.**
+
+```bash
+cd bento-box
+```
+
+**Step 5 — Build the project.**
+
+```bash
+go build ./...
+```
+
+**Step 6 — Run the tests.**
+
+```bash
+go test ./...
+```
+
+**Step 7 — Run Bento from source.**
+
+```bash
+go run ./cmd/bento --dry-run
+```
+
+`--dry-run` changes nothing on your machine. Note that `go run ./cmd/bento` is
+the *developer* workflow; `./bento-darwin-arm64` is the released binary an end
+user downloads. They are not the same thing and the two are documented
+separately.
+
+### After setup
+
+The same four commands work on all three platforms once Go is installed:
+
+| Task | Windows (PowerShell) | Linux (bash) | macOS (zsh) |
+| --- | --- | --- | --- |
+| Verify Go | `go version` | `go version` | `go version` |
+| Build | `go build ./...` | `go build ./...` | `go build ./...` |
+| Test | `go test ./...` | `go test ./...` | `go test ./...` |
+| Race detector | `go test -race ./...` | `go test -race ./...` | `go test -race ./...` |
+| Static analysis | `go vet ./...` | `go vet ./...` | `go vet ./...` |
+| Formatting | `gofmt -l .` | `gofmt -l .` | `gofmt -l .` |
+| Run from source | `go run ./cmd/bento --dry-run` | `go run ./cmd/bento --dry-run` | `go run ./cmd/bento --dry-run` |
+
+This table is a reminder, not a substitute for the ordered steps above.
+
+The full command reference — release builds for every platform, integration
+tests, releasing, and where Bento writes on disk — is in
 [startcmd.md](startcmd.md). The engineering log is [works.md](works.md).
 
 Unit tests never touch the real system: package managers, command execution
 and environment writes are all behind interfaces with mocks. Tests that hit
-the network are behind a build tag:
+the network are behind a build tag and are not part of `go test ./...`:
 
 ```bash
-go test -tags integration ./internal/installer/...
+go test -tags integration -v -run TestLive ./internal/installer/...
 ```
 
 ---
