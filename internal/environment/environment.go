@@ -201,10 +201,10 @@ func (m *Manager) AddPath(dir string) Change {
 		m.changes = append(m.changes, change)
 		return change
 	}
-	dir = paths.Normalise(dir)
+	windows := m.OS == "windows"
+	dir = paths.NormaliseFor(dir, windows)
 	change.Value = dir
 
-	windows := m.OS == "windows"
 	if containsEntry(m.currentPath(), dir, windows) {
 		change.Reason = "already on PATH"
 		m.changes = append(m.changes, change)
@@ -352,7 +352,7 @@ func containsEntry(entries []string, dir string, windows bool) bool {
 // MergePath appends a directory to a PATH list unless it is already there. It
 // reports whether the list changed.
 func MergePath(entries []string, dir string, windows bool) ([]string, bool) {
-	dir = paths.Normalise(dir)
+	dir = paths.NormaliseFor(dir, windows)
 	if dir == "" || containsEntry(entries, dir, windows) {
 		return entries, false
 	}

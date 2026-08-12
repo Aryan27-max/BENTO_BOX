@@ -489,9 +489,10 @@ func (i *Installer) configure(ctx context.Context, spec dependency.Spec, outcome
 
 // refreshVerifierPath lets verification see directories added during this run.
 func (i *Installer) refreshVerifierPath() {
-	i.Verifier.ExtraPath = mergeUnique(i.Verifier.ExtraPath, i.Environment.AddedPath())
+	windows := i.OS == "windows"
+	i.Verifier.ExtraPath = mergeUnique(i.Verifier.ExtraPath, i.Environment.AddedPath(), windows)
 	if i.npmPrefix != "" {
-		i.Verifier.ExtraPath = mergeUnique(i.Verifier.ExtraPath, []string{i.npmBinDir()})
+		i.Verifier.ExtraPath = mergeUnique(i.Verifier.ExtraPath, []string{i.npmBinDir()}, windows)
 	}
 }
 
@@ -522,7 +523,7 @@ func (i *Installer) checkService(ctx context.Context, spec dependency.Spec, outc
 func (i *Installer) commandEnv() []string {
 	added := i.Environment.AddedPath()
 	if i.npmPrefix != "" {
-		added = mergeUnique(added, []string{i.npmBinDir()})
+		added = mergeUnique(added, []string{i.npmBinDir()}, i.OS == "windows")
 	}
 	if len(added) == 0 {
 		return nil
@@ -547,11 +548,15 @@ func (i *Installer) findOnBentoPath(name string) (string, bool) {
 	return "", false
 }
 
-func mergeUnique(existing, additions []string) []string {
+// mergeUnique appends directories that are not already in the list. It answers
+// "is this the same directory?" the same way the environment writer does —
+// case-insensitively on Windows — so that a directory recorded as C:\Go\bin is
+// not added a second time as c:\go\bin.
+func mergeUnique(existing, additions []string, windows bool) []string {
 	for _, addition := range additions {
 		found := false
 		for _, entry := range existing {
-			if paths.Normalise(entry) == paths.Normalise(addition) {
+			if paths.SameEntry(entry, addition, windows) {
 				found = true
 				break
 			}

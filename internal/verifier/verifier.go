@@ -124,10 +124,18 @@ func (v *Verifier) verifyPaths(verification dependency.Verification) (Result, bo
 	if exists == nil {
 		exists = pathExists
 	}
-	lookup := paths.Lookup(v.Home, v.Getenv)
+
+	// These candidates are written in the flavour of the operating system they
+	// belong to — the Windows entry for VS Code is
+	// "${LOCALAPPDATA}/Programs/Microsoft VS Code/Code.exe" — so they are
+	// expanded for that platform rather than for whichever one Bento was built
+	// for. Expanded in the wrong flavour they would match nothing on disk and
+	// the application would be reported missing.
+	windows := v.OS == "windows"
+	lookup := paths.LookupFor(v.Home, v.Getenv, windows)
 
 	for _, candidate := range verification.Paths[v.OS] {
-		expanded := paths.Expand(candidate, lookup)
+		expanded := paths.ExpandFor(candidate, lookup, windows)
 		if expanded != "" && exists(expanded) {
 			return Result{Present: true, Location: expanded}, true
 		}
