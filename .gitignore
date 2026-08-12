@@ -13,3 +13,7 @@
 .idea/
 .vscode/
 *.swp
+
+#claude docs 
+startcmd.md
+works.md
