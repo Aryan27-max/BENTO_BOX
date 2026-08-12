@@ -1,6 +1,6 @@
-# Contributing to QWENTUS
+# Contributing to BENTO-BOX
 
-First off, thank you for your interest in contributing to QWENTUS! 🎉
+First off, thank you for your interest in contributing to BENTO-BOX! 🎉
 
 We welcome meaningful contributions that improve the project. However, this repository maintains a high quality standard. Please read these guidelines carefully before submitting a Pull Request.
 
@@ -198,4 +198,4 @@ By contributing, you agree to abide by this repository's Code of Conduct.
 
 ---
 
-Thank you for helping make **QWENTUS** better! 🚀
+Thank you for helping make **BENTO-BOX** better! 🚀
